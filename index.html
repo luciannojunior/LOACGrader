@@ -1,0 +1,97 @@
+<html>
+  <head>
+    <title>LOAC Grader</title>
+    <script>
+      (() => {
+        console.log("Developed by @luciannojunior");
+
+        let getById = id => () => document.getElementById(id);
+
+        const weights = getById("weights")();
+        const grades = getById("grades")();
+        const ngrades = getById("ngrades")();
+        const nweights = getById("nweights")();
+        const sumgrades = getById("sumgrades")();
+        const sumweights = getById("sumweights")();
+        const average = getById("average")();
+
+        [weights, grades].map(el => (el.onkeyup = () => checkAverage()));
+
+        const isValidGrade = value => !!value || value === '0'
+
+        const separate = str => str.split ? str.split(',').filter(isValidGrade) : []
+
+        const add = (one, previous) => one + previous
+
+        const getValuesForFields = fields => fields.map(({ value }) => value);
+
+        const setValueForField = field => value => (field.value = value);
+
+        const checkSum = value =>
+          separate(value)
+            .map(Number)
+            .reduce(add, 0);
+
+        const checkLength = value => separate(value).length;
+
+        const checkAverage = () => {
+          const values = getValuesForFields([weights, grades]);
+          const [sumWeights, sumGrades] = values.map(checkSum);
+          const [nWeights, nGrades] = values.map(checkLength);
+          const [computedWeights, computedGrades] = values.map(separate)
+
+          const finalGrade = computedGrades.map((one, i) => one * computedWeights[i] || 0).reduce(add, 0) / sumWeights
+
+          setValueForField(sumweights)(sumWeights);
+          setValueForField(sumgrades)(sumGrades);
+          setValueForField(nweights)(nWeights);
+          setValueForField(ngrades)(nGrades);
+          setValueForField(average)(finalGrade);
+        };
+      })();
+
+    </script>
+    <style type="text/css">
+input[type="text"] {
+  height: 25px;
+  width: 300px;
+  margin: 10px 0
+}
+
+span {
+  font-weight: bold;
+}
+
+#help input, #sums input {
+  width: 70px
+}
+    </style>
+  </head>
+  <body>
+    <div style="display: flex;">
+      <div>
+        <span> Pesos (coletado em 11/12/2018) <br/></psan>
+          <input type="text" id="weights" onchange="verifyAverage()"  value="0,3,3,0,3,1,2,3,1,2,1,3,4,2,2,2,3,2,4,20,2,4,4,4,5,5,9,0"/><br/>
+          <span> Suas Notas (todas, separadas por virgula)</span></br>
+          <input type="text" id="grades"/></br>
+          <span> Sua média</span></br>
+          <input type="text" id="average" style="width: 70px"/></br></br>
+
+          <span> Código para pegar os pesos na página da disciplina</span></br>
+          <input type="text" value="weights = []; for (i = 1; i <= 28; i++) { weights.push(parseInt($('ol').children[i-1].textContent.slice(-3))) }; console.log(weights.join(','))"/>
+      </div>
+      <div style="margin-left: 10px;" id="help">
+        <span>Qts. Pesos<br/></psan>
+          <input id="nweights" type="text"/><br/>
+          <span> Qtd. Notas</span></br>
+          <input id="ngrades" type="text"/></br>
+      </div>
+      <div id="sums" style="margin-left: 10px;">
+        <span>Soma Pesos<br/></psan>
+          <input id="sumweights" type="text"/><br/>
+          <span>Soma Notas</span></br>
+          <input id="sumgrades" type="text"/></br>
+      </div>
+    </div>
+  </body>
+</html>
